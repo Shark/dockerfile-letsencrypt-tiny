@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+data_path="/data"
+account_key_path="${data_path}/account.key"
+acme_dir_path="/acme-dir"
+
+main() {
+  local csr_name="${1:-}"
+
+  if [[ -z $csr_name ]]; then
+    >&2 echo "CSR name must be given"
+    exit 1
+  fi
+
+  local csr_path="$data_path/${csr_name}.csr"
+  if [[ ! -r $csr_path ]]; then
+    >&2 echo "CSR does not exist or is not readable: $csr_path"
+    exit 1
+  fi
+
+  if [[ ! -w $data_path ]]; then
+    >&2 echo "Data path is not writable: $data_path"
+    exit 1
+  fi
+
+  if [[ ! -w $acme_dir_path ]]; then
+    >&2 echo "ACME dir is not writable: $acme_dir_path"
+    exit 1
+  fi
+
+  if [[ ! -r $account_key_path ]]; then
+    >&2 echo "Letsencrypt account key does not exist or is not readable: $account_key_path"
+    exit 1
+  fi
+
+  local random_string=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
+  local crt_filename="${csr_name}_$(date +"%Y-%m-%d_%H:%M:%S")_${random_string}"
+  local crt_path="$data_path/${crt_filename}.crt"
+
+  /usr/local/bin/acme_tiny.py --account-key $account_key_path \
+                              --csr $csr_path \
+                              --acme-dir $acme_dir_path \
+                              > "$crt_path"
+
+  cat /usr/local/share/lets-encrypt-x1-cross-signed.pem >> "$crt_path"
+  cp "$crt_path" "$data_path/${csr_name}_latest.crt"
+}
+
+main "$@"
