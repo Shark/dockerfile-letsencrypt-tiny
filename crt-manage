@@ -47,7 +47,7 @@ main() {
 
   if [[ $? -eq 0 ]]; then
     declare letsencrypt_intermediate_crt="/usr/local/share/lets-encrypt-x3-cross-signed.pem"
-    openssl verify -CApath /etc/ssl/certs/ -untrusted "$letsencrypt_intermediate_crt" "$crt_tempfile"
+    openssl verify -CApath /etc/ssl/certs/ -untrusted "$letsencrypt_intermediate_crt" "$crt_tmpfile"
 
     if [[ $? -eq 0 ]]; then
       cat $letsencrypt_intermediate_crt >> "$crt_tmpfile"
