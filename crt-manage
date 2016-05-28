@@ -37,14 +37,19 @@ main() {
   local random_string=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1)
   local crt_filename="${csr_name}_$(date +"%Y-%m-%d_%H:%M:%S")_${random_string}"
   local crt_path="$data_path/${crt_filename}.crt"
+  local crt_tmpfile="$(mktemp)"
+  trap "rm -f $crt_tmpfile" EXIT
 
   /usr/local/bin/acme_tiny.py --account-key $account_key_path \
                               --csr $csr_path \
                               --acme-dir $acme_dir_path \
-                              > "$crt_path"
+                              > "$crt_tmpfile"
 
-  cat /usr/local/share/lets-encrypt-x1-cross-signed.pem >> "$crt_path"
-  cp "$crt_path" "$data_path/${csr_name}_latest.crt"
+  if [[ $? -eq 0 ]]; then
+    cat /usr/local/share/lets-encrypt-x3-cross-signed.pem >> "$crt_tmpfile"
+    cp "$crt_tmpfile" "$crt_path"
+    cp "$crt_tmpfile" "$data_path/${csr_name}_latest.crt"
+  fi
 }
 
 main "$@"

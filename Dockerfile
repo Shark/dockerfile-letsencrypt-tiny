@@ -1,6 +1,6 @@
 FROM alpine:3.3
 
-RUN acme_tiny_revision="f61f72c212cea27f388eb4a26ede0d65035bdb53" && \
+RUN acme_tiny_revision="7a5a2558c8d6e5ab2a59b9fec9633d9e63127971" && \
     apk add --update python3 bash openssl ca-certificates git && \
     ln -s /usr/bin/python3 /usr/local/bin/python && \
     tempdir=$(mktemp -d) && \
@@ -12,7 +12,7 @@ RUN acme_tiny_revision="f61f72c212cea27f388eb4a26ede0d65035bdb53" && \
     chmod +x /usr/local/bin/acme_tiny.py && \
     cd / && \
     rm -r $tempdir && \
-    wget -O /usr/local/share/lets-encrypt-x1-cross-signed.pem https://letsencrypt.org/certs/lets-encrypt-x1-cross-signed.pem && \
+    wget -O /usr/local/share/lets-encrypt-x3-cross-signed.pem https://letsencrypt.org/certs/lets-encrypt-x3-cross-signed.pem && \
     apk del git && \
     rm -rf /var/cache/apk/* && \
     adduser -u 500 -H -D letsencrypt && \
