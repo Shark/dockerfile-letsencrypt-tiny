@@ -6,6 +6,9 @@ This repository contains a Dockerfile which bundles [acme-tiny](https://github.c
 
 `make`
 
+- Generate a RSA key: `openssl genrsa 4096 > new.key`
+- Generate a CSR: `openssl req -new -sha256 -key new.key -subj "/CN=example.invalid" > example.csr`
+
 ## Contributing
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
